@@ -1,0 +1,21 @@
+program
+    class Main <empty>
+        static func main voidtype
+            formals
+            stmtblock
+                vardef i inttype
+                vardef j inttype
+                assign
+                    varref j
+                    neg
+                        intconst 1
+                assign
+                    varref i
+                    cond
+                        equ
+                            intconst 2
+                            intconst 3
+                        mul
+                            varref j
+                            intconst 3
+                        intconst 5

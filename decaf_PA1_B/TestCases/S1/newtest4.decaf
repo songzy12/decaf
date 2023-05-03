@@ -1,0 +1,24 @@
+class State {
+    int state;
+    
+
+    void method(int f) {
+        switch(state){
+        case 1 :
+             f ++;
+             state = 2;
+        case 2:
+        case 3 :
+             switch(f){
+                case 1:
+                    state = 1;
+                case 2:
+                    state = 2;
+             }
+        	 f = f + 1;
+        	 break;
+        default:
+             Print(state);
+        }
+    }
+}

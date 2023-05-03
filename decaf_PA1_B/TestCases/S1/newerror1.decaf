@@ -1,0 +1,10 @@
+//unterminate comment
+
+class Main {
+	/*error here
+    static void main() {
+        int i;		
+        i = i  -1; // 
+        
+    }
+}

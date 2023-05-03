@@ -1,0 +1,11 @@
+// this program test ? :
+
+class Main {
+    static void main() {
+        int i;
+        int j;		
+        j = -1; 
+        i = 2==3 ? j*3 : 5;
+        
+    }
+}

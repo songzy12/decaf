@@ -1,0 +1,9 @@
+/* This Program test multi
+comment */
+
+class Main {
+    static void main() {
+        int i;		
+        i = i  -1; /*/* */
+    }
+}
