@@ -1,0 +1,174 @@
+本阶段的实验内容为从语法分析树生成三地址码。
+
+需要添加对前缀/后缀++/--，?:表达式，repeat-until循环，switch语句的支持，并且删除对instanceof的支持。
+
+
+一、删除对instanceof的支持
+
+由于tac模拟器的原因（即支持instanceof的tac模拟器无法正常运行），故在实验开始时就删除对instanceof的支持。instanceof的实现机制是在vtable中保留一部分关于父亲的信息，只需删除vtable中的此段内容即可，因此我们采取最简单的方法，即在生成tac代码的时候不print这一部分内容，具体做法只需将Translater.java里面printTo函数中如下一段代码注释掉即可：
+
+/*if (vt.parent != null) {
+	pw.println("    " + vt.parent.name);
+} else {
+	pw.println("    <empty>");
+}*/
+
+
+二、添加对++,--的支持
+
+以++为例，由实验要求，前缀++的动作为：先将后面的表达式自增1，再将其值返回，因此借鉴Translater.java里面genAdd等方法的写法，写出Translater的方法如下：
+
+public Temp genPreinc(Temp src) {
+    Temp one = genLoadImm4(1);
+    Temp dst = Temp.createTempI4();
+    append(Tac.genAdd(src, src, one));	// 将操作数自增1
+    append(Tac.genAssign(dst, src));	// 记录其值并返回
+    return dst;
+}
+
+类似的，后缀++的动作为：先将后面的表达式暂存，再将其自增1，最后返回暂存的值，因此写出方法如下：
+
+public Temp genPostinc(Temp src) {
+    Temp one = genLoadImm4(1);
+    Temp dst = Temp.createTempI4();
+    append(Tac.genAssign(dst, src));	// 将操作数暂存
+    append(Tac.genAdd(src, src, one));	// 将操作数自增1
+    return dst;
+}
+
+随后在TransPass2.java中添加接口调用Translater的这两个方法即可：
+
+public void visitPreinc(Tree.Preinc expr) {
+    expr.expr.accept(this);
+    expr.val = tr.genPreinc(expr.expr.val);
+}
+public void visitPostinc(Tree.Postinc expr) {
+    expr.expr.accept(this);
+    expr.val = tr.genPostinc(expr.expr.val);
+}
+
+
+三、添加?:表达式的支持
+
+借鉴if-then-else语句的结构设计，我们将表达式A ? B : C的代码生成如下：
+
+    A.code;
+    if (A == false) goto false_label;
+    B.code;
+    result = B;
+    goto exit_label;
+false_label:
+    C.code;
+    result = C;
+exit_label:
+
+只需按照if-then-else的格式在TransPass2.java中添加方法如下：
+
+public void visitCondExpr(Tree.CondExpr expr) {
+    expr.val = Temp.createTempI4();
+    expr.cond.accept(this);
+    Label rightLabel = Label.createLabel(), exitLabel = Label.createLabel();
+    tr.genBeqz(expr.cond.val, rightLabel);
+    expr.left.accept(this);
+    tr.genAssign(expr.val, expr.left.val);
+    tr.genBranch(exitLabel);
+    tr.genMark(rightLabel);
+    expr.right.accept(this);
+    tr.genAssign(expr.val, expr.right.val);
+    tr.genMark(exitLabel);
+}
+
+
+四、添加对repeat-until的支持
+
+repeat-until循环与while循环几乎完全一致，其生成的代码结构如下：
+
+loop:
+    loopBody.code;
+    loopCond.code;
+    if (loopCond == false) goto loop;
+exit:
+
+只需按照while的格式在TransPass2.java中添加方法如下，注意exit标号用于实现break语句的跳转：
+
+public void visitRepeat(Tree.Repeat repeat) {
+    Label loop = Label.createLabel(), exit = Label.createLabel();
+    tr.genMark(loop);
+    loopExits.push(exit); // 设置用于break的断点
+    if (repeat.stmt != null)
+        repeat.stmt.accept(this);
+    repeat.expr.accept(this);
+    tr.genBeqz(repeat.expr.val, loop);
+    loopExits.pop();
+    tr.genMark(exit);
+}
+
+
+五、添加对switch-case的支持
+
+switch-case比较复杂，由于考虑之前实现switch语句的时候的作用域问题（switch语句没有处理作用域，即switch语句本身不视为一个作用域），所以本实验实现的switch语句的语义与C++语言的switch语句的语义略有不同。本实验实现的switch语句在每个分支语句执行结束之后直接跳转到外部，而不继续执行下一个分支语句，同时switch语句内部也不支持break语句。
+
+我们给出的实现方式是将其视为多路if-then-else语句来执行，具体生成的代码结构如下：
+
+switch (expr) {
+    case C1 : S1
+    case C2 : S2
+    ...
+    case Cn : Sn
+    default : S
+}
+
+    expr.code;
+    if (expr != C1) goto next1;
+    S1.code;
+    goto exit;
+next1:
+    if (expr != C2) goto next2;
+    S2.code
+    goto exit;
+next2:
+    ...
+    if (expr != Cn) goto nextn;
+    Sn.code;
+    goto exit;
+nextn:
+    S.code;
+exit:
+
+    注意我们可以将上述switch语句生成的如下一段代码视作单个case语句生成的代码：
+
+    if (expr != Ci) goto nexti;
+    Si.code;
+    goto exit;
+nexti;
+
+    对于每个case语句而言，生成这段代码除了自己内部知道的常量Ci和语句Si之外，还需要知道expr和exit，故不能用普通的visit模式来实现，我们给出的实现方法如下：
+
+@Override
+public void visitSwitch(Tree.Switch switch_) {
+    switch_.expr.accept(this);
+    Label exit = Label.createLabel();
+    for (Tree case_ : switch_.caseList) // 对每个case_语句生成代码
+        genCase(case_, switch_.expr.val, exit); // 但是每个case_语句生成代码，需要知道expr和exit，因此利用参数传递进去
+    switch_.defaultClause.accept(this);
+    tr.genMark(exit);
+}
+
+// 生成每个case语句对应的代码，这里不使用visitCase的模式就是为了能够传递额外的两个参数val和exit
+public void genCase(Tree case_, Temp val, Label exit) { 
+    Tree.Case c = (Tree.Case)case_;
+    c.expr.accept(this);
+    Label nextLabel = Label.createLabel();
+    Temp tmp = tr.genEqu(val, c.expr.val);
+    tr.genBeqz(tmp, nextLabel);
+    for (Tree stmt : c.slist)
+    	stmt.accept(this);
+    tr.genBranch(exit);
+    tr.genMark(nextLabel);
+}
+
+@Override
+public void visitDefaultClause(Tree.DefaultClause default_) {
+    for (Tree stmt : default_.slist)
+        stmt.accept(this);
+}

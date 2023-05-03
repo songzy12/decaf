@@ -1,0 +1,27 @@
+class Main {
+    static void main() {
+        int i;
+        int j;
+        i = 4;
+        j = 3;
+        //if((i = j++) != 4)
+        //{
+        //    Print(j, "\n");   //4
+        //}
+
+        int k;
+        int m;
+        int n;
+        i = 3;
+        k = i ++ + i ++;    //   k = 7, i = 5
+        m = ++i + ++i;      //   m = 13, i = 7
+        n = i ++ + ++ i;    //   n = 16, i = 9
+        i = i ++ * i ++;    //   i = 90
+        Print(k, "\n");
+        Print(m, "\n");
+        Print(n, "\n");
+        Print(i, "\n");
+
+    }
+
+}

@@ -1,0 +1,24 @@
+class Main {
+	
+    static void main() {
+        int i;		
+        i = 10*10; //
+        Print(isSquare(i),"\n");
+        Print(isSquare(99));
+
+        
+    }
+
+    static bool isSquare(int k)
+    {
+    	int i;
+    	int j;
+    	i = 0;
+    	repeat{
+    		++ i;
+            j = k/i;
+    	}until(i >= j);
+       
+    	return (k == j*j);
+    }
+}
