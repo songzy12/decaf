@@ -1,0 +1,13 @@
+本次实验内容是求解 DU 链。
+
+1. 算法则如 Lecture 13 中 2.4.2 所说，由于框架中已经实现了 活跃变量分析，故给了我们很多的便利。对于 Basic Block 中所输出的 LiveOut 我们扫描 p 中后面部分，若无其他定值点，则 引用点为 B 中 p 后 A 的引用点以及 LiveOut 中所指明 A 的引用点。而若 B 中 p 后仍有 A 的定值点，则 A 的引用点为 p 到 p 后最近的新定值点。
+
+2. 为了能够记录下相关更多的信息，我们在 Tac 中添加两个新的数据域，分别记录该条 Tac 语句在此 Basic Block 中的序数，以及将来引用到该条 Tac 中所定值 Temp 的 Tac 语句。前者是为该条语句引用其他定值点时输出，后者是为该定值点被其他语句引用时输出。
+
+3. 对于 liveIn, liveOut, liveUse 的扩充在于除了 Temp 变量之外，我们还需记录下与其相关的 Tac 语句。由于其成对出现，故选用了数据结构 HashMap, 其中每一对 Hash 的键为 Tac, 值为 Temp。然后只需在相关的 liveIn 处理过程中同时处理 liveInExt 即可。
+
+4. DU 链的分析主体则是在 BasicBlock 中由 analyzeDUChain() 函数给出。
+
+5. 为了能够在 output 文件夹下生成 .du 文件，我们在 Option 下的 Level 中添加枚举量 LEVEL5，对应于输出 .du 的情况。同时在 Driver 下的 compile() 函数中添加 当 option.getLevel() 为 LEVEL5 时，对于每一个 FlowGraph 调用 printDUTo()。 为此， 我们还需要在 FlowGraph 类中添加 printDUTo() 函数，在其中对于每一个 BasicBlock 调用 printDUTo(). 而 printDUTo 与函数 printLivenessTo 几乎相同， 除了在每条 Tac 语句后所跟内容为 DU 链而非 活跃变量集合。
+
+6. DU 链的输出格式如下：若该条 tac 语句存在定值点，且该定值变量在第 b_0 个 BasicBlock 中的第 t_0 条 tac 语句中引用了的话，则在其后添加 (bb_0, tt_0); 例如在 indexout.du 中 FUNCTION main 下 BASIC BLOCK 0 中， _T4 = 2 [ (b0, t3) (b2, t2) ] 意味着 该条 Tac 语句中 _T4 被定值， 并在 BASIC BLOCK 0 的 Tac 3 语句中，以及 BASIC BLOCK 2 的 Tac 2 语句中被引用。
