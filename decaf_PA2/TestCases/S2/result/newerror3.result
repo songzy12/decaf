@@ -1,0 +1,5 @@
+*** Error at (8,17): lvalue required as ++ operand
+*** Error at (9,13): undeclared variable 'a'
+*** Error at (9,19): incompatible operands: int + string
+*** Error at (10,19): incompatible operands: int - bool
+*** Error at (13,16): test expression must have bool type

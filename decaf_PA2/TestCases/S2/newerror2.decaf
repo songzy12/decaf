@@ -1,0 +1,24 @@
+class Main {
+	
+    static void main() {
+        int i;
+        int state;		
+    	string s;
+    	bool b;
+        switch(s){
+        case 1 :
+             
+             state = 2;
+        case "sss" :
+             switch(i+b){
+                case 1:
+                    state = i + s;
+                case true:
+                    state = 2;
+             }
+        	 break;
+        default:
+             Print(state);
+        }
+    }
+}

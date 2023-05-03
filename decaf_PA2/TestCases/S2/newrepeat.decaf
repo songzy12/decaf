@@ -1,0 +1,23 @@
+class Main {
+	
+    static void main() {
+        int i;		
+        i = 10*10; //
+        Print(isSqrt(i));
+
+        
+    }
+
+    static bool isSqrt(int k)
+    {
+    	int i;
+    	int j;
+    	i = 1;
+    	j = k;
+    	repeat{
+    		j = k / i;
+    		i ++;
+    	}until(i >= k);
+    	return (i == j);
+    }
+}

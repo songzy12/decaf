@@ -1,0 +1,15 @@
+class Main {
+    static void main() {
+        int i;
+        int b;
+        bool d;
+        string s;
+        repeat{
+            i = 1++;
+            a = b + s;
+            b = i - d;
+            if( i < 10)
+                break;
+        }until(s);
+    }
+}

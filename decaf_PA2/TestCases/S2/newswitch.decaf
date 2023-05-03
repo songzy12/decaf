@@ -1,0 +1,35 @@
+class Main {
+ static bool isLeapYear(int y) {
+  return (y % 4 == 0) && (y % 400 == 0 || y % 100 != 0);
+ }
+ static int getNumberOfDays(int y, int m) {
+  switch (m) {
+   case 1: return 31;
+   case 2: return isLeapYear(y) ? 29 : 28;
+   case 3: return 31;
+   case 4: return 30;
+   case 5: return 31;
+   case 6: return 30;
+   case 7: return 31;
+   case 8: return 31;
+   case 9: return 30;
+   case 10: return 31;
+   case 11: return 30;
+   case 12: return 31;
+   default: return -1;
+  }
+ }
+ static void main() {
+  int c;
+  int y;
+  int m;
+  c = ReadInteger();
+  if (c > 0) {
+   repeat {
+    y = ReadInteger();
+    m = ReadInteger();
+    Print(getNumberOfDays(y, m));
+   } until(--c <= 0);
+  }
+ }
+}

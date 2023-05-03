@@ -1,0 +1,16 @@
+//new
+
+class Main {
+    static void main() {
+        int a;
+        int b;
+        bool d;
+        string s;
+        a ++;
+        ++ b;
+        a = d ? a : b;
+        s = a ? b : d;
+        s ++;
+        -- d;
+    }
+}

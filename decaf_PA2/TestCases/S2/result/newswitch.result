@@ -1,0 +1,18 @@
+GLOBAL SCOPE:
+    (1,1) -> class Main
+    CLASS SCOPE OF 'Main':
+        (2,14) -> static function isLeapYear : int->bool
+        (5,13) -> static function getNumberOfDays : int->int->int
+        (22,14) -> static function main : void
+        FORMAL SCOPE OF 'isLeapYear':
+            (2,29) -> variable @y : int
+            LOCAL SCOPE:
+        FORMAL SCOPE OF 'getNumberOfDays':
+            (5,33) -> variable @y : int
+            (5,40) -> variable @m : int
+            LOCAL SCOPE:
+        FORMAL SCOPE OF 'main':
+            LOCAL SCOPE:
+                (23,7) -> variable c : int
+                (24,7) -> variable y : int
+                (25,7) -> variable m : int

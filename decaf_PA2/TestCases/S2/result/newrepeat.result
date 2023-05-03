@@ -1,0 +1,13 @@
+GLOBAL SCOPE:
+    (1,1) -> class Main
+    CLASS SCOPE OF 'Main':
+        (3,17) -> static function main : void
+        (11,17) -> static function isSqrt : int->bool
+        FORMAL SCOPE OF 'main':
+            LOCAL SCOPE:
+                (4,13) -> variable i : int
+        FORMAL SCOPE OF 'isSqrt':
+            (11,28) -> variable @k : int
+            LOCAL SCOPE:
+                (13,10) -> variable i : int
+                (14,10) -> variable j : int

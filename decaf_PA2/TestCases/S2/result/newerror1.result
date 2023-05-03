@@ -1,0 +1,4 @@
+*** Error at (12,13): test expression must have bool type
+*** Error at (12,13): operands to ?:  have different types int and bool
+*** Error at (13,9): incompatible operand: ++ string
+*** Error at (14,9): incompatible operand: -- bool

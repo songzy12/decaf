@@ -1,0 +1,17 @@
+编译原理第二阶段实验PA2报告
+
+
+本阶段实验的主要目的是进行语义分析，大体在于对第一阶段构建的语法分析树进行两遍遍历，第一遍构建符号表，第二遍进行类型检查。
+
+本阶段实验的主要任务——在给出框架的基础上，加入对?:,++,--,switch-case语句，repeat-until语句的支持。
+
+
+本阶段实现策略详述如下：
+
+①对于?:表达式expr ? left : right，需要改变TypeCheck.java，加入对该表示表达式的节点的遍历函数，函数中先分别遍历expr，left和right。随后检测expr是否为bool expression，并且检测left和right是否类型一致。
+
+②对于++,--表达式，我们在语法分析阶段按照 ++ Expression 的形式识别。和上述相同，在TypeCheck.java中加入对该节点的遍历，遍历时先遍历其expr，随后检测该expr类型是否为int类型，因为我们认为只有int类型才能进行自增自减操作。另外，我们这里认为++,--表达式的操作数必须是左值，并且认为++LValue和--LValue得到LValue而LValue++，LValue--得到RValue，因此通过Java自身的反射机制instanceof检测该处节点是否为Tree.LValue节点和Tree的前缀加减节点。
+
+③对于switch-case语句，需要对BuildSys.java做处理，即添加对switch语句对应的各种节点添加遍历处理，由于我们这里认为switch后面的{}部分不构成一个block，故这里只是简单的写出遍历顺序，而不涉及任何和scope有关的问题。而在类型检查TypeCheck.java部分，需要对switch (expr) {...}的expr进行判断，我们这里认为此处的expr必须是一个int类型，另外对case val:语句中的val，也认为必须是一个int类型常量，判断常量仍然使用Java的反射机制，判断它是否是Tree.Literal类型节点。
+
+④对于repeat-until语句，和swich-case语句情形相同，需要对BuildSys.java和TypeCheck.java部分修改，由于其和while语句几乎完全相似，因此这里不再赘述。
