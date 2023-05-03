@@ -1,0 +1,50 @@
+program
+    class State <empty>
+        vardef state inttype
+        func method voidtype
+            formals
+                vardef f inttype
+            stmtblock
+                switch
+                    varref state
+                    switchblock
+                        case
+                            intconst 1
+                            caseblock
+                                postadd
+                                    varref f
+                                assign
+                                    varref state
+                                    intconst 2
+                        case
+                            intconst 2
+                            caseblock
+                                <empty>
+                        case
+                            intconst 3
+                            caseblock
+                                switch
+                                    varref f
+                                    switchblock
+                                        case
+                                            intconst 1
+                                            caseblock
+                                                assign
+                                                    varref state
+                                                    intconst 1
+                                        case
+                                            intconst 2
+                                            caseblock
+                                                assign
+                                                    varref state
+                                                    intconst 2
+                                assign
+                                    varref f
+                                    add
+                                        varref f
+                                        intconst 1
+                                break
+                        default
+                            caseblock
+                                print
+                                    varref state

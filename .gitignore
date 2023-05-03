@@ -1,9 +1,23 @@
 .settings/
+.classpath
+.project
 
 decaf_PA1_A/result/
+decaf_PA1_A/tools/
 decaf_PA1_B/result/
+decaf_PA1_B/tools/
 decaf_PA2/result/
+decaf_PA2/tools/
 decaf_PA3/result/
+decaf_PA3/tools/
 decaf_PA4/result/
+decaf_PA4/tools/
+
+Lexer.java
+Parser.java
+Parser.output
+y.output
+yacc.*
 
 output/
+*.zip

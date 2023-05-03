@@ -1,0 +1,27 @@
+本次实验共有五项任务：
+
+①完成对块注释/* ... */的支持；
+②添加前缀后缀++,--操作；
+③添加?:操作；
+④添加switch-case语句；
+⑤添加repeat-until语句。
+
+每项操作大体完成过程如下：
+
+①直接使用正则表达式匹配/* .. */，保证匹配的*/是距离/*最近的*/，匹配成功后不动作（即忽略注释）。为了解决/*后面没有*/的问题，另写一个正则表达式匹配所有没有*/结尾的块注释，并且抛出一个异常；
+
+②关于++和--的语法一直颇有争论，我们采用了接近Java的处理方式，即使用如下语法：
+
+Expression -> ++LValue | --LValue | LValue++ | LValue--
+
+另外上面四种还可以接上分号当做一个SimpleStatement，关于++LValue和--LValue，如果不特殊处理，会产生conflicts，我们的程序中使用如下技术消除这些conflicts。
+
+对于++LValue和--LValue，我们改写为++ExLValue和--ExLValue。其中ExLValue是一种特殊的LValue，它是由一些比++优先级高的操作串接起来构成的LValue，例如：成员操作符.，函数调用，下标[]，甚至包括THIS.IDENTIFIER，(Expression).IDENTIFIER等等。我们将这些操作串接起来形成一个LValue，称为ExLValue，具体定义可以参考Paser.y文件。
+
+③?:操作只需添加如下语法：
+
+Expression -> Expression ? Expression : Expression
+
+不过简单的添加这样一句话会出现conflicts，其一是优先级问题，需要指明?:的优先级为一个合适的值；其二是结合性问题，即在a ? b : c ? d : e的时候，是(a ? b : c) ? d : e还是a ? b : (c ? d : e)，我们遵照Java语言的习惯，认为?:是右结合的。
+
+④⑤都只需简单添加几条语法即可，具体的可以参考Parser.y。
